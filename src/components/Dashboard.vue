@@ -35,16 +35,16 @@
           <div class="menu-item" @click="navigateTo('ActiveShift')">
             <span class="menu-icon">&#128337;</span> Daily Track Sheet
           </div>
-          <div class="menu-item" @click="navigateTo('CostingBreakDown')">
+          <div class="menu-item" @click="placeholderAction">
             <span class="menu-icon">&#128178;</span> Costing Breakdown
           </div>
-          <div class="menu-item" @click="navigateTo('ExpenseClaimed')">
+          <div class="menu-item" @click="placeholderAction">
             <span the="menu-icon">&#128176;</span> Expense Claimed
           </div>
-          <div class="menu-item" @click="navigateTo('ProjectCostTracker')">
+          <div class="menu-item" @click="placeholderAction">
             <span the="menu-icon">&#128200;</span> Project Cost Tracker
           </div>
-          <div class="menu-item" @click="navigateTo('WeeklyReport')">
+          <div class="menu-item" @click="placeholderAction">
             <span the="menu-icon">&#128200;</span> Weekly Report
           </div>
         </div>
@@ -95,6 +95,9 @@ export default {
   methods: {
     navigateTo(section) {
       this.$router.push({ name: section });
+    },
+    placeholderAction() {
+    alert("This feature is coming soon!"); // Or any other message
     },
     confirmLogout() {
       this.$router.push({ name: 'Login' });
