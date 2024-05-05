@@ -1,5 +1,5 @@
 <template>
-  <div class="login-wrapper">
+  <div class="register-form-wrapper">
     <header class="top-header">
       <div class="logo-container">
         <img src="../assets/kaddum-logo.png" alt="Kaddum Industries Logo" class="header-logo">
@@ -7,53 +7,70 @@
       <h1 class="header-title">Kaddum Industries</h1>
     </header>
 
-    <div class="login-form">
-      <h2>Login</h2>
-      <form @submit.prevent="handleLogin">
+    <div id="signup-form" class="form-container">
+      <h2>Register</h2>
+      <form @submit.prevent="submitForm">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" v-model="user.name" required>
+        </div>
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" v-model="email" required>
+          <input type="email" id="email" v-model="user.email" required>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" v-model="password" required>
+          <input type="password" id="password" v-model="user.password" required>
         </div>
-        <button type="submit" class="login-button">Login</button>
-        <a href="#" class="forgot-password">Forgot Password?</a>
-        <button @click="register" class="register-button">Register</button>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" v-model="user.confirmPassword" required>
+        </div>
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select id="role" v-model="user.role" required>
+            <option disabled value="">Select</option>
+            <option value="supervisor">Supervisor</option>
+            <!-- Add more roles as needed -->
+          </select>
+        </div>
+        <button type="submit" class="form-button">Register</button>
       </form>
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+      <div class="login-link">
+      <p>Already Registered? <a href="#" @click="goToLogin">Login</a></p>
+    </div>
     </div>
   </div>
 </template>
+
 <script>
 export default {
-  name: "LoginScreen",
+  name: 'RegisterForm',
   data() {
     return {
-      email: '',
-      password: '',
-      errorMessage: '',
+      user: {
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        role: ''
+      }
     };
   },
   methods: {
-    handleLogin() {
-      if (this.email === 'clinton@abc.com' && this.password === '12345678') {
-        this.$router.push({ name: 'Dashboard' });  // Redirect to the dashboard
-      } else {
-        this.errorMessage = "Invalid username or password.";
-      }
+    submitForm() {
+      console.log(this.user);
+      // Add API call or other form submission logic here
     },
-    register() {
-      // Placeholder for register method
-      this.$router.push({ name: 'RegisterForm' });  // Redirect to the registration page
-    },
-  },
+    goToLogin() {
+      this.$router.push({ name: 'Login' });
+    }
+  }
 };
 </script>
 
 <style scoped>
-.login-wrapper {
+.register-form-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -62,6 +79,7 @@ export default {
   background: linear-gradient(to bottom, #f30404 0%, #e49191 100%);
   padding: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  margin-bottom: 0px;
 }
 
 .top-header {
@@ -69,7 +87,7 @@ export default {
   padding: 15px 0;
   color: white;
   text-align: center;
-  margin-bottom: 1px;
+  margin-bottom: 0px;
 }
 
 .logo-container {
@@ -90,7 +108,7 @@ export default {
   text-shadow: 2px 2px 4px #000;
 }
 
-.login-form {
+.form-container {
   background-color: white;
   padding: 30px;
   border-radius: 15px;
@@ -115,7 +133,7 @@ export default {
   margin-bottom: 5px;
 }
 
-.form-group input {
+.form-group input, .form-group select {
   width: 70%;
   padding: 10px;
   border: 2px solid #ccc;
@@ -123,11 +141,11 @@ export default {
   transition: border-color 0.3s;
 }
 
-.form-group input:focus {
+.form-group input:focus, .form-group select:focus {
   border-color: #a20505;
 }
 
-.login-button, .register-button {
+.form-button {
   background: linear-gradient(to right, #a20505, #d7bebe);
   color: white;
   padding: 8px;
@@ -135,14 +153,14 @@ export default {
   width: 60%;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
   margin-top: 10px;
-  transition: all 0.3s ease; /* Enhanced transition for all properties */
+  transition: all 0.3s ease;
 }
 
-.login-button:hover, .register-button:hover {
-  transform: scale(1.1); /* More noticeable hover effect */
+.form-button:hover {
+  transform: scale(1.1);
 }
 
-.forgot-password {
+.sub-text {
   color: #333;
   text-decoration: underline;
   cursor: pointer;
@@ -151,11 +169,4 @@ export default {
   width: 100%;
   text-align: center;
 }
-
-.error {
-  color: red;
-  margin-top: 10px;
-  font-size: 14px;
-}
 </style>
-

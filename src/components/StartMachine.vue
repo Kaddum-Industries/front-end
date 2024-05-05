@@ -1,8 +1,9 @@
+<!-- StartMachine.vue -->
 <template>
-  <div class="add-employee-wrapper">
+  <div class="start-machine-wrapper">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <h1 class="sidebar-title">Employee Management</h1>
+      <h1 class="sidebar-title">Active Shifts</h1>
       <ul class="sidebar-nav">
         <li><button @click="goBack" class="nav-btn">Back</button></li>
       </ul>
@@ -11,52 +12,33 @@
     <!-- Main Content -->
     <div class="main-content">
       <header class="top-header">
-        <h1 class="header-title">Add Employee</h1>
+        <h1 class="header-title">Start Machine</h1>
       </header>
 
       <!-- Form Container -->
       <div class="form-container">
-        <form @submit.prevent="submitForm">
+        <form @submit.prevent="submitMachine">
           <div class="form-group">
-            <label for="name">Name:</label>
+            <label for="machine-name">Machine Name:</label>
             <input
               type="text"
-              v-model="name"
-              placeholder="Enter name"
+              v-model="machineName"
+              placeholder="Enter machine name"
               required
             />
           </div>
 
           <div class="form-group">
-            <label for="contact">Preferred Contact:</label>
+            <label for="description">Description (Optional):</label>
             <input
               type="text"
-              v-model="contact"
-              placeholder="Enter preferred contact"
-              required
+              v-model="description"
+              placeholder="Enter machine description"
             />
-          </div>
-
-          <div class="form-group">
-            <label for="background">Background:</label>
-            <select v-model="background" required>
-              <option value="LOCAL">LOCAL</option>
-              <option value="NOT LOCAL">NOT LOCAL</option>
-              <option value="LOCAL & INDIGENOUS">LOCAL & INDIGENOUS</option>
-              <option value="NOT LOCAL & INDIGENOUS">NOT LOCAL & INDIGENOUS</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="status">Status:</label>
-            <select v-model="status" required>
-              <option value="ACTIVE">ACTIVE</option>
-              <option value="INACTIVE">INACTIVE</option>
-            </select>
           </div>
 
           <div class="form-buttons">
-            <button type="submit" class="submit-btn">Submit</button>
+            <button type="submit" class="submit-btn">Start Machine</button>
             <button type="button" class="cancel-btn" @click="goBack">Cancel</button>
           </div>
         </form>
@@ -66,45 +48,30 @@
 </template>
 
 <script>
+import { ref, getCurrentInstance } from 'vue';
+
 export default {
-  name: "add-employee",
-  data() {
-    const editEmployee = JSON.parse(localStorage.getItem("editEmployee"));
+  name: 'StartMachine',
+  setup() {
+    const { proxy } = getCurrentInstance();
+    const machineName = ref('');
+    const description = ref('');
+
+    const goBack = () => {
+      proxy.$router.push({ name: 'ActiveShift' });
+    };
+
+    const submitMachine = () => {
+      console.log('Machine started');
+    };
+
     return {
-      id: editEmployee?.id || null,
-      name: editEmployee?.name || '',
-      contact: editEmployee?.contact || '',
-      background: editEmployee?.background || 'LOCAL',
-      status: editEmployee?.status || 'ACTIVE',
+      machineName,
+      description,
+      goBack,
+      submitMachine,
     };
   },
-  methods: {
-    goBack() {
-      this.$router.push({ name: 'EmployeeManagement' });
-    },
-    submitForm() {
-      let employees = JSON.parse(localStorage.getItem("employeesData")) || [];
-      const newEmployee = {
-        id: this.id || Date.now(),
-        name: this.name,
-        contact: this.contact,
-        background: this.background,
-        status: this.status,
-      };
-
-      if (this.id) {
-        const index = employees.findIndex(e => e.id === this.id);
-        if (index !== -1) {
-          employees[index] = newEmployee;
-        }
-      } else {
-        employees.push(newEmployee);
-      }
-
-      localStorage.setItem("employeesData", JSON.stringify(employees));
-      this.$router.push({ name: 'EmployeeManagement' });
-    }
-  }
 };
 </script>
 
@@ -188,7 +155,7 @@ label {
   margin-bottom: 5px;
 }
 
-input, select {
+input {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;

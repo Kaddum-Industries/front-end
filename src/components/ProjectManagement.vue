@@ -1,8 +1,8 @@
 <template>
-  <div class="machine-management-wrapper">
+  <div class="project-management-wrapper">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <h1 class="sidebar-title">Machine Management</h1>
+      <h1 class="sidebar-title">Project Management</h1>
       <ul class="sidebar-nav">
         <li><button @click="goBack" class="nav-btn">Home</button></li>
       </ul>
@@ -12,37 +12,39 @@
     <div class="main-content">
       <header class="top-header">
         <div class="header-buttons">
-          <button class="add-machine-btn" @click="addMachine">Add Machine</button>
+          <button class="add-project-btn" @click="addProject">Add Project</button>
         </div>
       </header>
 
-      <!-- Machine Table -->
-      <div class="machine-table">
+      <!-- Project Table -->
+      <div class="project-table">
         <table>
           <thead>
             <tr>
-              <th style="width: 80px;">Machine ID</th>
+              <th style="width: 80px;">Project ID</th>
               <th style="width: 200px;">Name</th>
-              <th style="width: 300px;">Description</th>
+              <th style="width: 120px;">Start Date</th>
+              <th style="width: 250px;">Location</th>
               <th style="width: 100px;">Status</th>
               <th style="width: 150px;">Action</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-if="machines.length === 0">
-              <td colspan="5" class="no-machines-message">No machines to show</td>
+            <tr v-if="projects.length === 0">
+              <td colspan="6" class="no-projects-message">No projects to show</td>
             </tr>
-            <tr v-for="machine in machines" :key="machine.id">
-              <td>{{ machine.id }}</td>
-              <td>{{ machine.name }}</td>
-              <td>{{ machine.description }}</td>
+            <tr v-for="project in projects" :key="project.id">
+              <td>{{ project.id }}</td>
+              <td>{{ project.name }}</td>
+              <td>{{ project.startDate }}</td>
+              <td>{{ project.location }}</td>
               <td>
-                <span v-if="machine.status === 'ACTIVE'" class="status-active">🟢 ACTIVE</span>
-                <span v-if="machine.status === 'INACTIVE'" class="status-inactive">🔴 INACTIVE</span>
+                <span v-if="project.status === 'Active'" class="status-active">🟢 Active</span>
+                <span v-if="project.status === 'Closed'" class="status-inactive">🔴 Closed</span>
               </td>
               <td>
-                <button @click="editMachine(machine)">Edit</button>
-                <button @click="deleteMachine(machine.id)">Delete</button>
+                <button @click="editProject(project)">Edit</button>
+                <button @click="deleteProject(project.id)">Delete</button>
               </td>
             </tr>
           </tbody>
@@ -54,36 +56,36 @@
 
 <script>
 export default {
-  name: 'machine-management',
+  name: 'project-management',
   data() {
     return {
-      machines: []
+      projects: []
     };
   },
   methods: {
-    fetchMachines() {
-      const storedMachines = JSON.parse(localStorage.getItem('machinesData')) || [];
-      this.machines = storedMachines;
+    fetchProjects() {
+      const storedProjects = JSON.parse(localStorage.getItem('projectsData')) || [];
+      this.projects = storedProjects;
     },
-    addMachine() {
-      localStorage.removeItem('editMachine');
-      this.$router.push({ name: 'AddMachine' });
+    addProject() {
+      localStorage.removeItem('editProject');
+      this.$router.push({ name: 'AddProject' });
     },
-    editMachine(machine) {
-      localStorage.setItem('editMachine', JSON.stringify(machine));
-      this.$router.push({ name: 'AddMachine' });
+    editProject(project) {
+      localStorage.setItem('editProject', JSON.stringify(project));
+      this.$router.push({ name: 'AddProject' });
     },
-    deleteMachine(id) {
-      this.machines = this.machines.filter(machine => machine.id !== id);
-      localStorage.setItem('machinesData', JSON.stringify(this.machines));
-      console.log('Deleted machine with ID:', id);
+    deleteProject(id) {
+      this.projects = this.projects.filter(project => project.id !== id);
+      localStorage.setItem('projectsData', JSON.stringify(this.projects));
+      console.log('Deleted project with ID:', id);
     },
     goBack() {
       this.$router.push({ name: 'Dashboard' });
     }
   },
   mounted() {
-    this.fetchMachines();
+    this.fetchProjects();
   }
 };
 </script>
@@ -151,7 +153,7 @@ export default {
   gap: 10px;
 }
 
-.add-machine-btn {
+.add-project-btn {
   background-color: #b91c1c;
   color: white;
   padding: 10px;
@@ -162,12 +164,12 @@ export default {
   transition: background-color 0.3s;
 }
 
-.add-machine-btn:hover {
+.add-project-btn:hover {
   background-color: #a11616;
 }
 
-/* Machine Table */
-.machine-table {
+/* Project Table */
+.project-table {
   margin-top: 20px;
   background-color: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -197,7 +199,7 @@ td {
   background-color: #f9f9f9;
 }
 
-.no-machines-message {
+.no-projects-message {
   text-align: center;
   font-weight: bold;
   color: #b91c1c;

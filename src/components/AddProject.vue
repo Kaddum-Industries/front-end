@@ -1,8 +1,8 @@
 <template>
-  <div class="add-employee-wrapper">
+  <div class="add-project-wrapper">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <h1 class="sidebar-title">Employee Management</h1>
+      <h1 class="sidebar-title">Project Management</h1>
       <ul class="sidebar-nav">
         <li><button @click="goBack" class="nav-btn">Back</button></li>
       </ul>
@@ -11,47 +11,42 @@
     <!-- Main Content -->
     <div class="main-content">
       <header class="top-header">
-        <h1 class="header-title">Add Employee</h1>
+        <h1 class="header-title">Add Project</h1>
       </header>
 
       <!-- Form Container -->
       <div class="form-container">
         <form @submit.prevent="submitForm">
           <div class="form-group">
-            <label for="name">Name:</label>
+            <label for="name">Project Name:</label>
             <input
               type="text"
               v-model="name"
-              placeholder="Enter name"
+              placeholder="Enter project name"
               required
             />
           </div>
 
           <div class="form-group">
-            <label for="contact">Preferred Contact:</label>
+            <label for="start-date">Start Date:</label>
+            <input type="date" v-model="startDate" required />
+          </div>
+
+          <div class="form-group">
+            <label for="location">Location:</label>
             <input
               type="text"
-              v-model="contact"
-              placeholder="Enter preferred contact"
+              v-model="location"
+              placeholder="Enter location"
               required
             />
-          </div>
-
-          <div class="form-group">
-            <label for="background">Background:</label>
-            <select v-model="background" required>
-              <option value="LOCAL">LOCAL</option>
-              <option value="NOT LOCAL">NOT LOCAL</option>
-              <option value="LOCAL & INDIGENOUS">LOCAL & INDIGENOUS</option>
-              <option value="NOT LOCAL & INDIGENOUS">NOT LOCAL & INDIGENOUS</option>
-            </select>
           </div>
 
           <div class="form-group">
             <label for="status">Status:</label>
             <select v-model="status" required>
-              <option value="ACTIVE">ACTIVE</option>
-              <option value="INACTIVE">INACTIVE</option>
+              <option value="Active">Active</option>
+              <option value="Closed">Closed</option>
             </select>
           </div>
 
@@ -67,42 +62,42 @@
 
 <script>
 export default {
-  name: "add-employee",
+  name: 'add-project',
   data() {
-    const editEmployee = JSON.parse(localStorage.getItem("editEmployee"));
+    const editProject = JSON.parse(localStorage.getItem('editProject'));
     return {
-      id: editEmployee?.id || null,
-      name: editEmployee?.name || '',
-      contact: editEmployee?.contact || '',
-      background: editEmployee?.background || 'LOCAL',
-      status: editEmployee?.status || 'ACTIVE',
+      id: editProject?.id || null,
+      name: editProject?.name || '',
+      startDate: editProject?.startDate || '',
+      location: editProject?.location || '',
+      status: editProject?.status || 'Active',
     };
   },
   methods: {
     goBack() {
-      this.$router.push({ name: 'EmployeeManagement' });
+      this.$router.push({ name: 'ProjectManagement' });
     },
     submitForm() {
-      let employees = JSON.parse(localStorage.getItem("employeesData")) || [];
-      const newEmployee = {
+      const projects = JSON.parse(localStorage.getItem('projectsData')) || [];
+      const newProject = {
         id: this.id || Date.now(),
         name: this.name,
-        contact: this.contact,
-        background: this.background,
+        startDate: this.startDate,
+        location: this.location,
         status: this.status,
       };
 
       if (this.id) {
-        const index = employees.findIndex(e => e.id === this.id);
+        const index = projects.findIndex(p => p.id === this.id);
         if (index !== -1) {
-          employees[index] = newEmployee;
+          projects.splice(index, 1, newProject);
         }
       } else {
-        employees.push(newEmployee);
+        projects.push(newProject);
       }
 
-      localStorage.setItem("employeesData", JSON.stringify(employees));
-      this.$router.push({ name: 'EmployeeManagement' });
+      localStorage.setItem('projectsData', JSON.stringify(projects));
+      this.$router.push({ name: 'ProjectManagement' });
     }
   }
 };
@@ -188,7 +183,7 @@ label {
   margin-bottom: 5px;
 }
 
-input, select {
+input[type="text"], input[type="date"], select {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
