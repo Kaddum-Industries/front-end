@@ -1,4 +1,3 @@
-<!-- StartMachine.vue -->
 <template>
   <div class="start-machine-wrapper">
     <!-- Sidebar -->
@@ -19,27 +18,43 @@
       <div class="form-container">
         <form @submit.prevent="submitMachine">
           <div class="form-group">
-            <label for="machine-name">Machine Name:</label>
-            <input
-              type="text"
-              v-model="machineName"
-              placeholder="Enter machine name"
-              required
-            />
+            <label for="project-name">Project Name:</label>
+            <select id="project-name" v-model="selectedProject" required>
+              <option value="" disabled>Select Project</option>
+              <option v-for="project in projects" :key="project.id" :value="project">
+                {{ project.name }}
+              </option>
+            </select>
           </div>
 
           <div class="form-group">
-            <label for="description">Description (Optional):</label>
+            <label for="machine-name">Machine Name:</label>
+            <select id="machine-name" v-model="selectedMachine" required>
+              <option value="" disabled>Select Machine</option>
+              <option v-for="machine in machines" :key="machine.id" :value="machine">
+                {{ machine.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description:</label>
+            <input type="text" id="description" v-model="description" placeholder="Enter description">
+          </div>
+
+          <div class="form-group">
+            <label for="start-time">Start Time:</label>
             <input
-              type="text"
-              v-model="description"
-              placeholder="Enter machine description"
+              id="start-time"
+              type="time"
+              v-model="startTime"
+              required
             />
           </div>
 
           <div class="form-buttons">
             <button type="submit" class="submit-btn">Start Machine</button>
-            <button type="button" class="cancel-btn" @click="goBack">Cancel</button>
+            <button type="button" @click="goBack" class="cancel-btn">Cancel</button>
           </div>
         </form>
       </div>
@@ -48,26 +63,69 @@
 </template>
 
 <script>
-import { ref, getCurrentInstance } from 'vue';
+import { ref, onMounted, getCurrentInstance } from 'vue';
 
 export default {
   name: 'StartMachine',
   setup() {
     const { proxy } = getCurrentInstance();
-    const machineName = ref('');
+    const projects = ref([]);
+    const machines = ref([]);
+    const selectedProject = ref(null);
+    const selectedMachine = ref(null);
     const description = ref('');
+    const startTime = ref(new Date().toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }));
 
     const goBack = () => {
       proxy.$router.push({ name: 'ActiveShift' });
     };
 
     const submitMachine = () => {
-      console.log('Machine started');
+      const newMachineOperation = {
+        id: Date.now(), // Ensure each machine operation has a unique ID
+        projectName: selectedProject.value.name,
+        machineName: selectedMachine.value.name,
+        description: description.value,
+        startTime: startTime.value
+      };
+
+      // Save the new machine operation data to local storage
+      const existingMachines = JSON.parse(localStorage.getItem('machineOperationsData')) || [];
+      existingMachines.push(newMachineOperation);
+      localStorage.setItem('machineOperationsData', JSON.stringify(existingMachines));
+
+      console.log('Machine operation added:', newMachineOperation);
+      goBack(); // Optionally navigate back after submission
     };
 
+    const loadMachines = () => {
+      const storedMachines = JSON.parse(localStorage.getItem('machinesData')) || [];
+      machines.value = storedMachines.filter(machine => machine.id && machine.name);
+    };
+
+    const loadProjects = () => {
+      const storedProjects = JSON.parse(localStorage.getItem('projectsData'));
+      if (storedProjects) {
+        projects.value = storedProjects.map(proj => ({ name: proj.name, id: proj.id }));
+      }
+    };
+
+    onMounted(() => {
+      loadMachines();
+      loadProjects();
+    });
+
     return {
-      machineName,
+      projects,
+      machines,
+      selectedProject,
+      selectedMachine,
       description,
+      startTime,
       goBack,
       submitMachine,
     };
@@ -155,7 +213,7 @@ label {
   margin-bottom: 5px;
 }
 
-input {
+input, select {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;

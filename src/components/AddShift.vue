@@ -1,4 +1,3 @@
-<!-- AddShift.vue -->
 <template>
   <div class="add-shift-wrapper">
     <!-- Sidebar -->
@@ -19,8 +18,22 @@
       <div class="form-container">
         <form @submit.prevent="submitShift">
           <div class="form-group">
+            <label for="project-name">Project Name:</label>
+            <select id="project-name" v-model="projectName" required>
+              <option value="" disabled>Select Project</option>
+              <option
+                v-for="project in projectNames"
+                :key="project"
+                :value="project"
+              >
+                {{ project }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label for="employee-name">Employee Name:</label>
-            <select v-model="selectedEmployee" required>
+            <select id="employee-name" v-model="selectedEmployee" required>
               <option value="" disabled>Select Employee</option>
               <option
                 v-for="employee in employeeNames"
@@ -34,7 +47,7 @@
 
           <div class="form-group">
             <label for="role">Role:</label>
-            <select v-model="selectedRole" required>
+            <select id="role" v-model="selectedRole" required>
               <option value="" disabled>Select Role</option>
               <option
                 v-for="role in roles"
@@ -49,9 +62,9 @@
           <div class="form-group">
             <label for="shift-start-time">Start Time:</label>
             <input
+              id="shift-start-time"
               type="time"
               v-model="shiftStartTime"
-              step="1"
               required
             />
           </div>
@@ -77,25 +90,50 @@ export default {
     const selectedEmployee = ref(null);
     const roles = ref(['Supervisor', 'Operator', 'Assistant']);
     const selectedRole = ref('');
-    const shiftStartTime = ref(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }));
+    const shiftStartTime = ref(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+    const projectNames = ref([]); // State to store project names
+    const projectName = ref('');  // State for selected project name
 
     const goBack = () => {
       proxy.$router.push({ name: 'ActiveShift' });
     };
 
     const submitShift = () => {
-      console.log('New shift added');
+      const newShift = {
+        id: Date.now(), // Ensure each shift has a unique ID
+        projectName: projectName.value,
+        employee: selectedEmployee.value,
+        role: selectedRole.value,
+        startTime: shiftStartTime.value
+      };
+
+      // Store the shift data in localStorage
+      const existingShifts = JSON.parse(localStorage.getItem('shiftsData')) || [];
+      existingShifts.push(newShift);
+      localStorage.setItem('shiftsData', JSON.stringify(existingShifts));
+
+      console.log('New shift added:', newShift);
+      goBack(); // Optionally navigate back after submission
     };
 
     const loadEmployeeNames = () => {
       const storedEmployees = JSON.parse(localStorage.getItem('employeesData'));
-
       if (Array.isArray(storedEmployees)) {
         employeeNames.value = storedEmployees.map((emp) => emp.name);
       }
     };
 
-    onMounted(loadEmployeeNames);
+    const loadProjectNames = () => {
+      const storedProjects = JSON.parse(localStorage.getItem('projectsData'));
+      if (Array.isArray(storedProjects)) {
+        projectNames.value = storedProjects.map((proj) => proj.name);
+      }
+    };
+
+    onMounted(() => {
+      loadEmployeeNames();
+      loadProjectNames();
+    });
 
     return {
       employeeNames,
@@ -103,6 +141,8 @@ export default {
       roles,
       selectedRole,
       shiftStartTime,
+      projectNames,
+      projectName,
       goBack,
       submitShift,
     };
